@@ -10,7 +10,7 @@ def fuel_counter(masses):
 @click.command()
 @click.option("--masses", help="Input file")
 def count_fuel_requirement(masses):
-    mass_df = pd.read_csv(masses, header="mass")
+    mass_df = pd.read_csv(masses, names=["mass"])
     mass_df.loc[:, "fuel_requirement"] = mass_df.mass.apply(fuel_counter)
 
 
