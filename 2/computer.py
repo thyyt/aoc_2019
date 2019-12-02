@@ -16,10 +16,14 @@ class Computer:
         self.position = 0
         self.halted = False
 
+    def initial_replacements(self, mappings):
+        for key, value in mappings.items():
+            self.memory[key] = value
+
     def operate(self, left, right, opcode):
         if opcode == 1:
             return left + right
-        else:
+        elif opcode == 2:
             return left * right
 
     def next_operation(self):
@@ -50,6 +54,7 @@ class Computer:
 def compute_first_part():
     inputs = read_inputs()
     first_computer = Computer(inputs)
+    first_computer.initial_replacements({1: 12, 2: 2})
     first_computer.compute()
 
 
