@@ -9,14 +9,14 @@ def read_inputs(input_file="input"):
 class Computer:
     def __init__(self, inputs):
         self.inputs = inputs
-        self.memory = inputs
+        self.memory = inputs.copy()
         self.position = 0
         self.halted = False
 
     def reset(self):
         self.halted = False
         self.position = 0
-        self.memory = self.inputs
+        self.memory = self.inputs.copy()
 
     def insert_noun_and_verb(self, noun, verb):
         self.memory[1] = noun
@@ -37,12 +37,16 @@ class Computer:
         if opcode == 99:
             self.halted = True
 
-        else:
+        elif opcode in [1, 2]:
             left_input = self.memory[self.memory[self.position + 1]]
             right_input = self.memory[self.memory[self.position + 2]]
             output_position = self.memory[self.position + 3]
             self.memory[output_position] = self.operate(left_input, right_input, opcode)
             self.position += 4
+        else:
+            print("Invalid opcode")
+            self.halted = True
+            self.memory[0] = -1
 
     def compute(self):
         while not self.halted:
@@ -70,18 +74,13 @@ def find_noun_and_verb(output=19690720):
     for noun in range(100):
         for verb in range(100):
             computer.reset()
-            old_memory = computer.get_memory()
             computer.insert_noun_and_verb(noun, verb)
-            new_memory = computer.get_memory()
 
-            print(sum([a - b for a, b in zip(old_memory, new_memory)]))
-            # print(computer.get_memory())
             program_output = computer.compute()
 
-            print(noun, verb, program_output)
-
             if program_output == output:
-                print("Noun and verb to produce {output} are: {noun}, {verb}")
+                print(f"Noun and verb to produce {output} are: {noun}, {verb}")
+                print(f"100 * noun + verb: {100 * noun + verb}")
                 return noun, verb
 
 
