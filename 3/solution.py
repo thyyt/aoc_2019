@@ -25,9 +25,10 @@ class WireGrid:
             self.compute_wire_dimensions(instruction, "height")
             for instruction in wire_instructions
         ]
+
+        self.height, start_from_down = self.compute_dimension_range(height_dimensions)
         self.width, origin_w = self.compute_dimension_range(width_dimensions)
-        self.height, origin_h = self.compute_dimension_range(height_dimensions)
-        self.origin = (origin_h, origin_w)
+        self.origin = (self.height - start_from_down, origin_w)
         self.wires = []
 
         for instructions in wire_instructions:
@@ -62,21 +63,32 @@ class WireGrid:
     def create_wire(self, instructions):
         position_h = self.origin[0]
         position_w = self.origin[1]
-        wire_location = np.zeros((self.height, self.width))
+        wire_location = np.zeros((self.height + 1, self.width + 1))
 
         for instruction in instructions:
             direction = instruction[0]
             length = int(instruction[1:])
-            if direction == "D":
-                wire_location[position_h : position_h + length, position_w] = np.ones(
-                    length
-                )
-                position_h += length
-            elif direction == "U":
+            print(instruction, direction, length, position_w, self.width)
+            if direction == "U":
                 wire_location[position_h - length : position_h, position_w] = np.ones(
                     length
                 )
                 position_h -= length
+            elif direction == "D":
+                wire_location[position_h : position_h + length, position_w] = np.ones(
+                    length
+                )
+                position_h += length
+            elif direction == "R":
+                wire_location[position_h, position_w : position_w + length] = np.ones(
+                    length
+                )
+                position_w += length
+            elif direction == "L":
+                wire_location[position_h, position_w - length : position_w] = np.ones(
+                    length
+                )
+                position_w -= length
 
 
 if __name__ == "__main__":
