@@ -5,6 +5,13 @@ LETTERS = {"height": {"U", "D"}, "width": {"L", "R"}}
 NEGATIVE_DIRECTIONS = {"height": "D", "width": "L"}
 
 
+def manhattan(arrya_x, arrya_y):
+    distance = 0
+    for x, y in zip(arrya_x, arrya_y):
+        distance += abs(x - y)
+    return distance
+
+
 def read_inputs(input_file="input"):
     wire_instructions = []
     with open(input_file, "r") as wire_input:
@@ -68,7 +75,6 @@ class WireGrid:
         for instruction in instructions:
             direction = instruction[0]
             length = int(instruction[1:])
-            print(instruction, direction, length, position_w, self.width)
             if direction == "U":
                 wire_location[position_h - length : position_h, position_w] = np.ones(
                     length
@@ -89,8 +95,21 @@ class WireGrid:
                     length
                 )
                 position_w -= length
+        return wire_location
+
+    def get_intersections(self):
+        wire_sum = self.wires[0] + self.wires[1]
+        intersections = zip(*np.where(wire_sum == 2))
+        return intersections
 
 
 if __name__ == "__main__":
     instructions = read_inputs()
     first_grid = WireGrid(instructions)
+    intersections = first_grid.get_intersections()
+
+    distances = [
+        manhattan(first_grid.origin, intersection) for intersection in intersections
+    ]
+    print(distances)
+    print(min(distances))
