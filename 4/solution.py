@@ -23,9 +23,9 @@ def has_two_adjacent(password):
 
 def is_monotonic(password):
     for idx in range(1, len(password)):
-        if password[idx] > password[idx - 1]:
+        if int(password[idx]) < int(password[idx - 1]):
             return False
-        return True
+    return True
 
 
 def compute_valid_passwords(low=RANGE_LOW, high=RANGE_HIGH):
