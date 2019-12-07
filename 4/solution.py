@@ -1,3 +1,5 @@
+from collections import Counter
+
 RANGE_LOW = 246540
 RANGE_HIGH = 787419
 
@@ -38,8 +40,21 @@ def compute_valid_passwords(low=RANGE_LOW, high=RANGE_HIGH):
     return valids
 
 
+def at_most_two_equal(password):
+    counts = Counter(password)
+    return counts.most_common(1)[0][1] < 3
+
+
+def has_double(password):
+    counts = Counter(password)
+    return 2 in counts.values()
+
+
 if __name__ == "__main__":
-    valid_passwords = compute_valid_passwords()
+    initial_valid_passwords = compute_valid_passwords()
     print(
-        f"Range from {RANGE_LOW} to {RANGE_HIGH} has {len(valid_passwords)} valid passwords"
+        f"Range from {RANGE_LOW} to {RANGE_HIGH} has "
+        f"{len(initial_valid_passwords)} initially valid passwords"
     )
+    valids = [pw for pw in initial_valid_passwords if has_double(pw)]
+    print(f"Out of those, {len(valids)} are actually valid")
