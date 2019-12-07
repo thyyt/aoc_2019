@@ -63,53 +63,74 @@ class WireGrid:
         low = min([dim[0] for dim in dimensions])
         high = max([dim[1] for dim in dimensions])
 
-        size = abs(high) + abs(low)
+        size = abs(high) + abs(low) + 1
 
         return size, -low
 
     def create_wire(self, instructions):
         position_h = self.origin[0]
         position_w = self.origin[1]
-        wire_location = np.zeros((self.height + 1, self.width + 1))
+        wire_location = np.zeros((self.height, self.width))
+        wire_length = 0
 
         for instruction in instructions:
             direction = instruction[0]
             length = int(instruction[1:])
+            new_array = np.arange(wire_length + 1, wire_length + length + 1)
+
             if direction == "U":
-                wire_location[position_h - length : position_h, position_w] = np.ones(
-                    length
-                )
+                wire_location[position_h - length : position_h, position_w] = new_array[
+                    ::-1
+                ]
+                wire_length += length
                 position_h -= length
             elif direction == "D":
-                wire_location[position_h : position_h + length, position_w] = np.ones(
-                    length
-                )
+                wire_location[
+                    position_h + 1 : position_h + 1 + length, position_w
+                ] = new_array
+                wire_length += length
                 position_h += length
             elif direction == "R":
-                wire_location[position_h, position_w : position_w + length] = np.ones(
-                    length
-                )
+                wire_location[
+                    position_h, position_w + 1 : position_w + length + 1
+                ] = new_array
+                wire_length += length
                 position_w += length
             elif direction == "L":
-                wire_location[position_h, position_w - length : position_w] = np.ones(
-                    length
-                )
+                wire_location[position_h, position_w - length : position_w] = new_array[
+                    ::-1
+                ]
+                wire_length += length
                 position_w -= length
+
         return wire_location
 
     def get_intersections(self):
-        wire_sum = self.wires[0] + self.wires[1]
-        intersections = zip(*np.where(wire_sum == 2))
+        wire_sum = np.clip(a=self.wires[0], a_min=0, a_max=1) + np.clip(
+            a=self.wires[1], a_min=0, a_max=1
+        )
+        intersections = list(zip(*np.where(wire_sum == 2)))
         return intersections
+
+    def wire_distance(self, location):
+        return (
+            self.wires[0][location[0], location[1]]
+            + self.wires[1][location[0], location[1]]
+        )
 
 
 if __name__ == "__main__":
     instructions = read_inputs()
     first_grid = WireGrid(instructions)
     intersections = first_grid.get_intersections()
-
-    distances = [
+    manhattan_distances = [
         manhattan(first_grid.origin, intersection) for intersection in intersections
     ]
-    print(distances)
-    print(min(distances))
+    intersection_distances = [
+        first_grid.wire_distance(intersection) for intersection in intersections
+    ]
+    print(f"Shortest manhattan distance from start is {min(manhattan_distances)}")
+    wire_distances = [
+        first_grid.wire_distance(intersection) for intersection in intersections
+    ]
+    print(f"Shortest wire distance to an intersection is {int(min(wire_distances))}")
