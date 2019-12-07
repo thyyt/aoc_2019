@@ -35,7 +35,7 @@ class WireGrid:
 
         self.height, start_from_down = self.compute_dimension_range(height_dimensions)
         self.width, origin_w = self.compute_dimension_range(width_dimensions)
-        self.origin = (self.height - start_from_down, origin_w)
+        self.origin = (self.height - 1 - start_from_down, origin_w)
         self.wires = []
 
         for instructions in wire_instructions:
